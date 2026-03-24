@@ -14,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ca3_mobileapps.ui.theme.CA3_MobileAppsTheme
 
@@ -25,29 +24,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             CA3_MobileAppsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "CA3",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    MovieApp(innerPadding)
                 }
             }
         }
     }
 }
 
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-
-
-
-data class Films(
+// Data model representing a Film entity
+data class Movie(
     val id: Long = System.currentTimeMillis(),
     val title: String,
     val director: String,
@@ -55,65 +40,112 @@ data class Films(
 )
 
 @Composable
-fun MovieApp() {
-    // Estado da lista e dos inputs do formulário
-    val filmList = remember {
+fun MovieApp(paddingValues: PaddingValues) {
+
+    // State Management: Film list and form inputs using Compose state observables
+    val movieList = remember {
         mutableStateListOf(
-            Films(title = "Inception", director = "Christopher Nolan", year = "2010"),
-            Films(title = "The Matrix", director = "Wachowski Sisters", year = "1999"),
-            Films(title = "Interstellar", director = "Christopher Nolan", year = "2014"),
-            Films(title = "Parasite", director = "Bong Joon-ho", year = "2019"),
-            Films(title = "The Godfather", director = "Francis Ford Coppola", year = "1972")
+            Movie(title = "Inception", director = "Christopher Nolan", year = "2010"),
+            Movie(title = "The Matrix", director = "Wachowski Sisters", year = "1999"),
+            Movie(title = "Interstellar", director = "Christopher Nolan", year = "2014"),
+            Movie(title = "Parasite", director = "Bong Joon-ho", year = "2019"),
+            Movie(title = "The Godfather", director = "Francis Ford Coppola", year = "1972")
         )
     }
+
     var titleInput by remember { mutableStateOf("") }
     var directorInput by remember { mutableStateOf("") }
     var yearInput by remember { mutableStateOf("") }
 
+    // Main layout container: Combines system padding and custom padding
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues) // Respects system bars (StatusBar/NavigationBar)
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "My Movie Playlist",
+            style = MaterialTheme.typography.headlineMedium
+        )
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Minha Playlist de Filmes", style = MaterialTheme.typography.headlineMedium)
-
-        // 1. LISTAGEM (RecyclerView equivalente)
-        LazyColumn(modifier = Modifier.weight(1f).padding(vertical = 8.dp)) {
-            items(filmList) { filme ->
-                Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+        // LIST VIEW (Modern equivalent of RecyclerView)
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .padding(vertical = 8.dp)
+        ) {
+            items(movieList) { movie ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(filme.title, style = MaterialTheme.typography.titleLarge)
-                            Text("${filme.director} • ${filme.year}", style = MaterialTheme.typography.bodyMedium)
+                            Text(movie.title, style = MaterialTheme.typography.titleLarge)
+                            Text(
+                                text = "${movie.director} • ${movie.year}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
-                        // BOTÃO DELETAR (Vermelho com Ícone)
-                        IconButton(onClick = { filmList.remove(filme) }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Deletar", tint = Color.Red)
+
+                        // DELETE BUTTON: Removes the item from the observable list
+                        IconButton(onClick = { movieList.remove(movie) }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete Movie",
+                                tint = Color.Red
+                            )
                         }
                     }
                 }
             }
         }
 
-        HorizontalDivider()
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-        // 2. FORMULÁRIO DE ADIÇÃO (3 Atributos)
-        Column(modifier = Modifier.padding(top = 16.dp)) {
-            OutlinedTextField(value = titleInput, onValueChange = { titleInput = it }, label = { Text("Título") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = directorInput, onValueChange = { directorInput = it }, label = { Text("Diretor") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = yearInput, onValueChange = { yearInput = it }, label = { Text("Ano") }, modifier = Modifier.fillMaxWidth())
+        // ADDITION FORM: Input fields and submission logic
+        Column(modifier = Modifier.padding(top = 8.dp)) {
+            OutlinedTextField(
+                value = titleInput,
+                onValueChange = { titleInput = it },
+                label = { Text("Title") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = directorInput,
+                onValueChange = { directorInput = it },
+                label = { Text("Director") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = yearInput,
+                onValueChange = { yearInput = it },
+                label = { Text("Year") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Button(
                 onClick = {
+                    // Simple validation before adding to the list
                     if (titleInput.isNotBlank() && directorInput.isNotBlank()) {
-                        filmList.add(Films(title = titleInput, director = directorInput, year = yearInput))
-                        // Limpa os campos
+                        movieList.add(
+                            Movie(title = titleInput, director = directorInput, year = yearInput)
+                        )
+                        // Reset input fields
                         titleInput = ""; directorInput = ""; yearInput = ""
                     }
                 },
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
             ) {
-                Text("Adicionar Filme")
+                Text("Add Movie")
             }
         }
     }
