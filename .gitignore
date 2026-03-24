@@ -13,3 +13,23 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+### --- Gradle / Java --- ###
+.gradle/
+build/
+!gradle-wrapper.jar
+
+### --- JetBrains / Android Studio --- ###
+.idea/
+*.iml
+*.iws
+*.ipr
+/captures/
+.externalNativeBuild/
+.cxx/
+local.properties
+
+### --- OS / Temp --- ###
+Thumbs.db
+.DS_Store
+*.swp
