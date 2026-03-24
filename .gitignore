@@ -1,35 +1,22 @@
-    *.iml
-    .gradle
-    /local.properties
-    /.idea/caches
-    /.idea/libraries
-    /.idea/modules.xml
-    /.idea/workspace.xml
-    /.idea/navEditor.xml
-    /.idea/assetWizardSettings.xml
-    .DS_Store
-    /build
-    /captures
-    .externalNativeBuild
-    .cxx
-    local.properties
+# --- Pastas de Build e Cache ---
+.gradle/
+build/
+bin/
+obj/
+out/
 
-    ### --- Gradle / Java --- ###
-    .gradle/
-    build/
-    !gradle-wrapper.jar
+# --- Configurações de IDE (O que estava te incomodando) ---
+.idea/
+*.iml
+*.iws
+*.ipr
+*.user
+*.sln.DotSettings.user
 
-    ### --- JetBrains / Android Studio --- ###
-    .idea/
-    *.iml
-    *.iws
-    *.ipr
-    /captures/
-    .externalNativeBuild/
-    .cxx/
-    local.properties
+# --- Arquivos Locais/Sensiveis ---
+local.properties
+.DS_Store
+Thumbs.db
 
-    ### --- OS / Temp --- ###
-    Thumbs.db
-    .DS_Store
-    *.swp
+# --- Manter o Wrapper do Gradle (Importante!) ---
+!gradle-wrapper.jar
